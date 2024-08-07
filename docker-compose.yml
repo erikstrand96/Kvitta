@@ -8,15 +8,16 @@
       context: .
       dockerfile: Kvitta/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-    command: ["dotnet", "watch", "run"]
+      - POSTGRES_CONNECTION=${POSTGRES_CONNECTION}
+    env_file:
+      - .env
   db:
     image: postgres:latest
     ports:
       - 5432:5432
     volumes:
-      - kvitta:/var/lib/postgresql/data
+      - kvitta_db:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=supersecretpassword
 volumes:
-    kvitta:
+    kvitta_db:

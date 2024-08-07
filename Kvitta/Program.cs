@@ -1,6 +1,5 @@
-using Kvitta;
-using Kvitta.Data.Context;
-using Kvitta.Data.Extensions;
+using Infrastructure.Database.Context;
+using Infrastructure.Database.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,14 +8,16 @@ IConfiguration config = builder.Configuration;
 
 IServiceCollection services = builder.Services;
 // Add services to the container.
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 string connectionString = config.GetConnectionString("POSTGRES_CONNECTION") ??
-                          throw new InvalidOperationException("POSTGRES_CONNECTION environment variable is not set.");
+                          throw new InvalidOperationException("POSTGRES_CONNECTION is not set.");
 
 services.AddKvittaDbContext(connectionString);
+services.ApplyMigrations();
 
 var app = builder.Build();
 
@@ -27,14 +28,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-services.ApplyMigrations();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/tests", async (KvittaDbContext dbContext) =>
-{
-    var tests = await dbContext.Tests.ToListAsync();
-    return tests;
-}).WithName("GetAllTests").WithOpenApi();
-
-app.Run();
+await app.RunAsync();
