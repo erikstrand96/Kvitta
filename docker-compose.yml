@@ -1,0 +1,22 @@
+﻿services:
+  kvitta:
+    image: kvitta
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    build:
+      context: .
+      dockerfile: Kvitta/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    command: ["dotnet", "watch", "run"]
+  db:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - kvitta:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=supersecretpassword
+volumes:
+    kvitta:
