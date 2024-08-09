@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Kvitta/Kvitta.csproj", "Kvitta/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 RUN dotnet restore "Kvitta/Kvitta.csproj"
 COPY . .
 WORKDIR "/src/Kvitta"
