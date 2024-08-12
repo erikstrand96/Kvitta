@@ -1,5 +1,5 @@
 ﻿services:
-  kvitta:
+  kvitta-api:
     image: kvitta
     ports:
       - "8080:8080"
@@ -9,15 +9,22 @@
       dockerfile: Kvitta/Dockerfile
     environment:
       - POSTGRES_CONNECTION=${POSTGRES_CONNECTION}
+      - ASPNETCORE_ENVIRONMENT=Development
     env_file:
       - .env
+    develop:
+      watch:
+        - action: rebuild
+          path: .
   db:
     image: postgres:latest
     ports:
       - 5432:5432
     volumes:
       - kvitta_db:/var/lib/postgresql/data
+    env_file:
+      - .env
     environment:
-      - POSTGRES_PASSWORD=supersecretpassword
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 volumes:
     kvitta_db:

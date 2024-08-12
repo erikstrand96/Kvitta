@@ -1,7 +1,6 @@
 using Infrastructure.Database.Context;
 using Infrastructure.Database.Extensions;
-using Infrastructure.Database.Models;using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+using Infrastructure.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +18,14 @@ string connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTIO
                           throw new InvalidOperationException("POSTGRES_CONNECTION is not set.");
 
 services.AddKvittaDbContext(connectionString);
-services.ApplyMigrations();
+
+string aspnetcoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                                ?? throw new Exception("No aspnetcoreEnvironment");
+
+if (aspnetcoreEnvironment == "DEVELOPMENT")
+{
+    services.ApplyMigrations();
+}
 
 var app = builder.Build();
 
