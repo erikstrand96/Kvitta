@@ -11,7 +11,7 @@ internal class KvittaDbContextFactory : IDesignTimeDbContextFactory<KvittaDbCont
     {
         var optionsBuilder = new DbContextOptionsBuilder<KvittaDbContext>();
         
-        string connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION") ?? throw new InvalidOperationException("POSTGRES_CONNECTION is not set.");
+        string connectionString = Environment.GetEnvironmentVariable("KVITTA_DB_CONNECTION") ?? throw new InvalidOperationException("KVITTA_DB_CONNECTION is not set.");
         
         optionsBuilder.UseNpgsql(connectionString);
         
