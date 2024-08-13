@@ -14,15 +14,15 @@ IServiceCollection services = builder.Services;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-string connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION") ??
-                          throw new InvalidOperationException("POSTGRES_CONNECTION is not set.");
+string connectionString = Environment.GetEnvironmentVariable("KVITTA_DB_CONNECTION") ??
+                          throw new InvalidOperationException("KVITTA_DB_CONNECTION is not set.");
 
 services.AddKvittaDbContext(connectionString);
 
 string aspnetcoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
                                 ?? throw new Exception("No aspnetcoreEnvironment");
 
-if (aspnetcoreEnvironment == "DEVELOPMENT")
+if (aspnetcoreEnvironment == "Development")
 {
     services.ApplyMigrations();
 }

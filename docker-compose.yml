@@ -8,7 +8,7 @@
       context: .
       dockerfile: Kvitta/Dockerfile
     environment:
-      - POSTGRES_CONNECTION=${POSTGRES_CONNECTION}
+      - KVITTA_DB_CONNECTION=${KVITTA_DB_CONNECTION}
       - ASPNETCORE_ENVIRONMENT=Development
     env_file:
       - .env
@@ -16,7 +16,7 @@
       watch:
         - action: rebuild
           path: .
-  db:
+  kvitta-db:
     image: postgres:latest
     ports:
       - 5432:5432
