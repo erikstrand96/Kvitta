@@ -2,13 +2,16 @@ using Infrastructure.Database.Context;
 using Infrastructure.Database.Extensions;
 using Infrastructure.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration config = builder.Configuration;
+IConfiguration config = builder.Configuration; 
 
 IServiceCollection services = builder.Services;
 // Add services to the container.
+
+services.AddSerilog();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -65,6 +68,21 @@ app.MapGet("/valuables", async (KvittaDbContext dbContext) =>
     List<Valuable> valuables = await dbContext.Valuables.ToListAsync();
 
     return Results.Ok(valuables);
+});
+
+app.MapDelete("/valuables/{id}", async (KvittaDbContext context, Guid id) =>
+{
+    Valuable? valuable = await context.Valuables.FindAsync(id);
+
+    if (valuable is null)
+    {
+        return Results.NotFound();
+    }
+
+    context.Valuables.Remove(valuable);
+    await context.SaveChangesAsync();
+
+    return Results.Ok();
 });
 
 await app.RunAsync();

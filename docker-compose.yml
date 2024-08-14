@@ -6,7 +6,8 @@
       - "8081:8081"
     build:
       context: .
-      dockerfile: Dockerfile
+      #dockerfile: Dockerfile
+      target: development
     environment:
       - KVITTA_DB_CONNECTION=${KVITTA_DB_CONNECTION}
       - ASPNETCORE_ENVIRONMENT=Development
@@ -26,5 +27,6 @@
       - .env
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DATABASE=${POSTGRES_DATABASE}
 volumes:
     kvitta_db:
