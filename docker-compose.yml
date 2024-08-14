@@ -6,7 +6,7 @@
       - "8081:8081"
     build:
       context: .
-      dockerfile: Kvitta/Dockerfile
+      dockerfile: Dockerfile
     environment:
       - KVITTA_DB_CONNECTION=${KVITTA_DB_CONNECTION}
       - ASPNETCORE_ENVIRONMENT=Development
