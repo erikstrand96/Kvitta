@@ -1,5 +1,5 @@
 ﻿services:
-  kvitta-api:
+  api:
     image: kvitta
     ports:
       - "8080:8080"
@@ -16,7 +16,7 @@
       watch:
         - action: rebuild
           path: .
-  kvitta-db:
+  db:
     image: postgres:latest
     ports:
       - 5432:5432
