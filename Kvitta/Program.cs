@@ -1,12 +1,14 @@
 using Infrastructure.Database.Context;
 using Infrastructure.Database.Extensions;
 using Infrastructure.Database.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration config = builder.Configuration; 
+IConfiguration config = builder.Configuration;
 
 IServiceCollection services = builder.Services;
 // Add services to the container.
@@ -23,7 +25,7 @@ string connectionString = Environment.GetEnvironmentVariable("KVITTA_DB_CONNECTI
 services.AddKvittaDbContext(connectionString);
 
 string aspnetcoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-                                ?? throw new Exception("No aspnetcoreEnvironment");
+                               ?? throw new Exception("No aspnetcoreEnvironment");
 
 if (aspnetcoreEnvironment == "Development")
 {
