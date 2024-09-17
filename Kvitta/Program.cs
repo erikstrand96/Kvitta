@@ -1,10 +1,6 @@
-using Infrastructure.Database.Context;
 using Infrastructure.Database.Extensions;
-using Infrastructure.Database.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Kvitta.Endpoints;
 using Serilog;
-using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +9,16 @@ IConfiguration config = builder.Configuration;
 IServiceCollection services = builder.Services;
 // Add services to the container.
 
+builder.Logging.ClearProviders();
 services.AddSerilog();
+builder.Host.UseSerilog((context, serilogConfig) =>
+    {
+        serilogConfig.ReadFrom.Configuration(context.Configuration);
+        serilogConfig.ReadFrom.Configuration(context.Configuration);
+    },
+    writeToProviders: true);
+
+builder.Services.AddCors();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -34,57 +39,22 @@ if (aspnetcoreEnvironment == "Development")
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
-
-app.MapGet("/", string () => "Hello World!");
-
-app.MapPost("/valuables", async Task<IResult> (KvittaDbContext dbContext, Valuable valuable) =>
+else
 {
-    dbContext.Valuables.Add(valuable);
-    await dbContext.SaveChangesAsync();
+    app.UseHttpsRedirection();
+}
 
-    return Results.Created($"/valuables/{valuable.Id}", valuable);
-});
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/valuables/{id}", async (Guid id, KvittaDbContext dbContext) =>
-{
-    Valuable? valuable = await dbContext.Valuables.FirstOrDefaultAsync(x => x.Id == id);
+app.MapGet("/", string () => "Hello NEW World!");
 
-    if (valuable is null)
-    {
-        return Results.NotFound();
-    }
-
-    return Results.Ok(valuable);
-});
-
-app.MapGet("/valuables", async (KvittaDbContext dbContext) =>
-{
-    List<Valuable> valuables = await dbContext.Valuables.ToListAsync();
-
-    return Results.Ok(valuables);
-});
-
-app.MapDelete("/valuables/{id}", async (KvittaDbContext context, Guid id) =>
-{
-    Valuable? valuable = await context.Valuables.FindAsync(id);
-
-    if (valuable is null)
-    {
-        return Results.NotFound();
-    }
-
-    context.Valuables.Remove(valuable);
-    await context.SaveChangesAsync();
-
-    return Results.Ok();
-});
+app.MapValuablesEndpoints();
 
 await app.RunAsync();

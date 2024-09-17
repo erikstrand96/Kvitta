@@ -1,4 +1,5 @@
-﻿using Infrastructure.Database.Context;
+﻿using System.Diagnostics;
+using Infrastructure.Database.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,7 @@ public static class KvittaDbContextExtensions
                 if (context.Database.GetMigrations().Any())
                 {
                     context.Database.Migrate();
+                    Console.WriteLine("{0} migration(s) applied", context.Database.GetMigrations().Count());
                 }
 
                 return services;
@@ -26,7 +28,7 @@ public static class KvittaDbContextExtensions
     {
         services.AddDbContext<KvittaDbContext>(options =>
             options.UseNpgsql(connectionString));
-        
+
         return services;
     }
 }
