@@ -28,13 +28,6 @@ public static class ValuablesEndpoints
             return Results.Ok(valuable);
         });
 
-        routeBuilder.MapGet("/valuables", async (KvittaDbContext dbContext) =>
-        {
-            List<Valuable> valuables = await dbContext.Valuables.ToListAsync();
-
-            return Results.Ok(valuables);
-        });
-
         routeBuilder.MapDelete("/valuables/{id}", async (KvittaDbContext context, Guid id) =>
         {
             Valuable? valuable = await context.Valuables.FindAsync(id);
