@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using Kvitta;
 
 namespace Kvitta.Endpoints.Valuables.Read.All;
 
@@ -19,6 +20,36 @@ public class ReadAllValuablesEndpoint(KvittaDbContext context) : EndpointBaseAsy
     {
        List<Valuable> result = await context.Valuables.ToListAsync(cancellationToken);
 
-        return  Results.Ok<IEnumerable<Valuable>>(result);
+       IEnumerable<Response> mappedResponse = result.ToResponse();
+       
+        return  Results.Ok(mappedResponse);
     }
 }
+
+internal record Response
+{
+    public Guid Id { get; set; }
+
+    public string Name { get; set; }
+
+    public DateOnly PurchaseDate { get; set; }
+
+    public double Value { get; set; }
+
+    public string? Description { get; set; }
+}
+
+internal static class Mapper
+{
+    internal static IEnumerable<Response> ToResponse(this IEnumerable<Valuable> values)
+    {
+        return values.Select(x => new Response()
+        {
+            Id = x.Id,
+            Value = x.Value,
+            Description = x.Description,
+            Name = x.Name,
+            PurchaseDate = x.PurchaseDate.ToDateOnly()
+        });
+    }  
+} 
