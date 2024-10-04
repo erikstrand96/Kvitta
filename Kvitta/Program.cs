@@ -81,7 +81,7 @@ else
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/", string () => "Hello NEW World!");
+app.MapGet("/hello", string () => "Hello NEW World!");
 
 app.MapValuablesEndpoints();
 
