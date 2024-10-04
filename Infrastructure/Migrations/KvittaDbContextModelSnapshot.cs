@@ -68,7 +68,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Warranties");
+                    b.ToTable("Warranty");
                 });
 
             modelBuilder.Entity("Infrastructure.Database.Models.Valuable", b =>

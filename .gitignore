@@ -409,3 +409,11 @@ FodyWeavers.xsd
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+/terraform.tfstate
+/.fleet/run.json
+/.terraform.lock.hcl
+/.terraform/providers/registry.terraform.io/hashicorp/azurerm/3.0.2/windows_amd64/terraform-provider-azurerm_v3.0.2_x5.exe
+*.tfvars
+.terraform
+/terraform.tfstate.backup
+/variables.tf
