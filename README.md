@@ -7,7 +7,7 @@ Create a .env-file in project root that contains the following environment varia
     POSTGRES_PASSWORD=my-password
     POSTGRES_DATABASE=my-database
 
-Run setx KVITTA_DB_CONNECTION 'my-connection-string'  to set the environment variable for the connection string pointing to your docker database.
+Run setx KVITTA-DB-CONNECTION 'my-connection-string'  to set the environment variable for the connection string pointing to your development database.
 
     Example: 
-    setx  KVITTA_DB_CONNECTION Host=host;Port=port;Database=database;Username=username;Password=password
+    setx  KVITTA-DB-CONNECTION Host=host;Port=port;Database=database;Username=username;Password=password
