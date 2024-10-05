@@ -2,6 +2,8 @@
 .NET 8 </br>
 PostgreSQL
 
+**Local Development**</br>
+
 Create a .env-file in project root that contains the following environment variables:
 
     POSTGRES_PASSWORD=my-password
