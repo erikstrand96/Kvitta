@@ -4,17 +4,32 @@ using Infrastructure.Database.Extensions;
 using Kvitta.Endpoints;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Sinks.Grafana.Loki;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration config = builder.Configuration;
+IConfiguration config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
 
 IServiceCollection services = builder.Services;
 // Add services to the container.
 
 builder.Logging.ClearProviders();
 services.AddSerilog();
-builder.Host.UseSerilog((context, serilogConfig) => { serilogConfig.ReadFrom.Configuration(context.Configuration); },
+builder.Host.UseSerilog((context, serilogConfig) =>
+    {
+        serilogConfig.ReadFrom.Configuration(context.Configuration)
+            .Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName)
+            .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName).
+            Enrich.FromLogContext();
+
+        string? grafanaLoki = config.GetValue<string>("GrafanaLoki");
+
+        if (!string.IsNullOrWhiteSpace(grafanaLoki))
+        {
+            serilogConfig.WriteTo.GrafanaLoki(grafanaLoki);
+        }
+    },
     writeToProviders: true);
 
 builder.Services.AddCors();
@@ -37,7 +52,7 @@ string? connectionString;
 
 if (aspnetcoreEnvironment == "Development")
 {
-    connectionString = Environment.GetEnvironmentVariable("KVITTA-DB-CONNECTION") ??
+    connectionString = config.GetConnectionString("KvittaDbConnection") ??
                        throw new ApplicationException("No database connection set!");
 
     ;
@@ -58,7 +73,7 @@ else
     var client = new SecretClient(new Uri("https://kvitta-keyvault.vault.azure.net/"), new DefaultAzureCredential(),
         secretClientOptions);
 
-    KeyVaultSecret keyVaultSecret = client.GetSecret("KVITTA-DB-CONNECTION");
+    KeyVaultSecret keyVaultSecret = client.GetSecret("KvittaDbConnection");
     connectionString = keyVaultSecret.Value ?? throw new ApplicationException("No database connection set!");
 
     services.AddKvittaDbContext(connectionString);
@@ -81,7 +96,12 @@ else
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/hello", string () => "Hello NEW World!");
+app.MapGet("/hello", string () =>
+{
+    Log.Warning("Hello world!");
+
+    return "Hello NEW World!";
+});
 
 app.MapValuablesEndpoints();
 
