@@ -43,7 +43,7 @@ string? connectionString;
 
 if (aspnetcoreEnvironment == "Development")
 {
-    connectionString = config.GetConnectionString("KvittaDbConnection") ??
+    connectionString = Environment.GetEnvironmentVariable("KvittaDbConnection") ??
                        throw new ApplicationException("No database connection set!");
 
     ;
