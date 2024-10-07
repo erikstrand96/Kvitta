@@ -4,8 +4,6 @@ using Infrastructure.Database.Extensions;
 using Kvitta.Endpoints;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Sinks.Grafana.Loki;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,13 +20,6 @@ builder.Host.UseSerilog((context, serilogConfig) =>
             .Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName)
             .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName).
             Enrich.FromLogContext();
-
-        string? grafanaLoki = config.GetValue<string>("GrafanaLoki");
-
-        if (!string.IsNullOrWhiteSpace(grafanaLoki))
-        {
-            serilogConfig.WriteTo.GrafanaLoki(grafanaLoki);
-        }
     },
     writeToProviders: true);
 
