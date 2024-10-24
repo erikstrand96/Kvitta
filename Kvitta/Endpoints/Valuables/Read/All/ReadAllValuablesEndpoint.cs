@@ -1,16 +1,13 @@
-using System.Collections;
 using Ardalis.ApiEndpoints;
 using Infrastructure.Database.Context;
 using Infrastructure.Database.Models;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
-using Kvitta;
 
 namespace Kvitta.Endpoints.Valuables.Read.All;
 
-public class ReadAllValuablesEndpoint(KvittaDbContext context) : EndpointBaseAsync
+public class ReadAllValuablesEndpoint(KvittaDbContext context, ILogger logger) : EndpointBaseAsync
     .WithoutRequest
     .WithResult<IResult>
 {
@@ -21,7 +18,7 @@ public class ReadAllValuablesEndpoint(KvittaDbContext context) : EndpointBaseAsy
        List<Valuable> result = await context.Valuables.ToListAsync(cancellationToken);
 
        IEnumerable<Response> mappedResponse = result.ToResponse();
-       
+        logger.LogWarning("Count allvaluables {Count}", result.Count.ToString());
         return  Results.Ok(mappedResponse);
     }
 }

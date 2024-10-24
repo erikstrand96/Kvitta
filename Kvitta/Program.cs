@@ -1,29 +1,75 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Infrastructure.Database.Extensions;
+using Kvitta;
 using Kvitta.Endpoints;
 using Microsoft.OpenApi.Models;
-using Serilog;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration config = new ConfigurationBuilder().AddEnvironmentVariables().Build();
-
 IServiceCollection services = builder.Services;
-// Add services to the container.
 
-builder.Logging.ClearProviders();
-services.AddSerilog();
-builder.Host.UseSerilog((context, serilogConfig) =>
+services.AddHttpLogging(x => { });
+
+services.AddExceptionHandler<ExceptionHandler>();
+services.AddProblemDetails();
+
+bool isDevelopmentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") is "Development";
+
+string? uriString = Environment.GetEnvironmentVariable("VaultUri");
+if (!string.IsNullOrWhiteSpace(uriString))
+{
+
+    Uri keyVaultEndpoint = new Uri(uriString);
+    builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new VisualStudioCredential());
+}
+
+IConfiguration config = builder.Configuration;
+
+string serviceName = "Kvitta";
+
+ResourceBuilder resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName).AddAttributes(new Dictionary<string, object>
+{
+    ["environment.name"] = builder.Environment.EnvironmentName,
+    ["app"] = builder.Environment.ApplicationName
+});
+
+builder.Logging.AddOpenTelemetry(options =>
+{
+    options.SetResourceBuilder(resourceBuilder);
+
+    if (isDevelopmentEnv)
     {
-        serilogConfig.ReadFrom.Configuration(context.Configuration)
-            .Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName)
-            .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName).
-            Enrich.FromLogContext();
-    },
-    writeToProviders: true);
+        options.AddConsoleExporter();
+    }
 
-builder.Services.AddCors();
+    options.AddOtlpExporter();
+});
+
+string? otlpEndpoint = config.GetValue<string?>("OtlpEndpoint");
+builder.Services.AddOpenTelemetry().WithMetrics(metrics =>
+{
+    metrics.SetResourceBuilder(resourceBuilder)
+    .AddHttpClientInstrumentation()
+    .AddAspNetCoreInstrumentation()
+    .AddRuntimeInstrumentation()
+    .AddProcessInstrumentation();
+    
+    bool enableConsoleMetrics = config.GetValue<bool>("EnableConsoleMetrics");
+    if (isDevelopmentEnv && enableConsoleMetrics)
+    {
+        metrics.AddConsoleExporter();
+    }
+
+    metrics.AddOtlpExporter();
+});
+
+
+services.AddCors();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
@@ -37,11 +83,12 @@ services.AddSwaggerGen(c =>
 services.AddControllers();
 
 string aspnetcoreEnvironment =
-    Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? throw new Exception("No aspnetcoreEnvironment");
+    Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+    throw new Exception("No ASPNETCORE_ENVIRONMENT env variable set");
 
 string? connectionString;
 
-if (aspnetcoreEnvironment == "Development")
+if (isDevelopmentEnv)
 {
     connectionString = Environment.GetEnvironmentVariable("KvittaDbConnection") ??
                        throw new ApplicationException("No database connection set!");
@@ -72,13 +119,15 @@ else
 
 var app = builder.Build();
 
+app.UseHttpLogging();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -87,15 +136,21 @@ else
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/hello", string () =>
+app.MapGet("/hello", string (ILogger<Program> logger) =>
 {
-    Log.Warning("Hello world!");
-
     return "Hello NEW World!";
 });
 
-app.MapValuablesEndpoints();
+app.MapGet("/logtest", void (ILogger<Program> logger) =>
+{
+    logger.LogInformation("Log Test");
+});
 
-app.MapControllers();
+app.MapGet("/exception", void () =>
+{
+    throw new Exception("Testing Exceptions");
+});
+
+app.MapValuablesEndpoints();
 
 await app.RunAsync();
