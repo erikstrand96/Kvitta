@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{C3C96FB4-7AD1-4D92-AE57-BEF5CD9CEE87}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C4C35B9-1502-48BC-B511-5C1202EAF82F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kvitta.Integration.Tests", "Tests\Kvitta.Integration.Tests\Kvitta.Integration.Tests.csproj", "{94E71E3B-A266-4CE6-8E59-0B3D097812EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,10 @@ Global
 		{C3C96FB4-7AD1-4D92-AE57-BEF5CD9CEE87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3C96FB4-7AD1-4D92-AE57-BEF5CD9CEE87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3C96FB4-7AD1-4D92-AE57-BEF5CD9CEE87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94E71E3B-A266-4CE6-8E59-0B3D097812EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94E71E3B-A266-4CE6-8E59-0B3D097812EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94E71E3B-A266-4CE6-8E59-0B3D097812EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94E71E3B-A266-4CE6-8E59-0B3D097812EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

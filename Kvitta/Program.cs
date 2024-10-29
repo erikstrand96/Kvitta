@@ -133,3 +133,5 @@ app.MapGet("/logtest", void (ILogger logger) =>
 app.MapValuablesEndpoints();
 
 await app.RunAsync();
+
+public partial class Program {}
