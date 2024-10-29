@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Infrastructure.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,8 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
         {
             Name = "Test",
             Value = 100,
-            PurchaseDate = DateTimeOffset.UtcNow
+            PurchaseDate = DateTimeOffset.UtcNow,
+            Description = "Test Description"
         };
 
         //Act
@@ -22,8 +24,39 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
         await DbContext.SaveChangesAsync();
 
         //Assert
-        var result = await DbContext.Valuables.FirstOrDefaultAsync(x => x.Id == valuable.Id);
-        Assert.NotNull(result);
+        var result = await DbContext.Valuables.Include(x => x.Warranty).FirstOrDefaultAsync(x => x.Id == valuable.Id);
 
+        result.Should().NotBeNull();
+        result!.Warranty.Should().BeNull("No warranty was added at creation");
+
+    }
+
+    [Fact]
+    public async void CreateWithWarrantyAdded_ShouldCreateValuableAndWarranty()
+    {
+        Valuable valuableWithWarranty = new()
+        {
+            Name = "Test",
+            Value = 100,
+            PurchaseDate = DateTimeOffset.UtcNow,
+            Description = "test description",
+            Warranty = new Warranty()
+            {
+                Description = "warranty description test",
+                ExpirationDate = new DateOnly(2025, 01, 01)
+            }
+        };
+        
+        //Act
+
+        await DbContext.Valuables.AddAsync(valuableWithWarranty);
+        await DbContext.SaveChangesAsync();
+
+        //Assert
+        var result = await DbContext.Valuables.Include(x => x.Warranty).FirstOrDefaultAsync(x => x.Id == valuableWithWarranty.Id);
+
+        result.Should().NotBeNull();
+        result!.Warranty.Should().NotBeNull("Warranty was added at creation");
+        
     }
 }
