@@ -11,6 +11,13 @@ public static class ValuablesEndpoints
 {
     public static IEndpointRouteBuilder MapValuablesEndpoints(this IEndpointRouteBuilder routeBuilder)
     {
+        routeBuilder.MapGet("/valuables", async (KvittaDbContext context) =>
+        {
+           List<Valuable> valuables = await context.Valuables.ToListAsync();
+
+           return Results.Ok(valuables);
+        });
+        
         routeBuilder.MapPost("/valuables", async (KvittaDbContext dbContext, Valuable valuable) =>
         {
             dbContext.Valuables.Add(valuable);

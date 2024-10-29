@@ -8,27 +8,35 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Serilog;
+using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IServiceCollection services = builder.Services;
-
-services.AddHttpLogging(x => { });
-
-services.AddExceptionHandler<ExceptionHandler>();
-services.AddProblemDetails();
-
+IConfiguration config = builder.Configuration;
 bool isDevelopmentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") is "Development";
 
-string? uriString = Environment.GetEnvironmentVariable("VaultUri");
-if (!string.IsNullOrWhiteSpace(uriString))
+builder.Logging.ClearProviders();
+
+builder.Host.UseSerilog((context, logConfig) =>
 {
+    logConfig.ReadFrom.Configuration(config);
+    logConfig.WriteTo.OpenTelemetry(otelConfig =>
+    {
+        otelConfig.ResourceAttributes = new Dictionary<string, object>
+        {
+            ["service.name"] = "Kvitta",
+            ["environment.name"] = builder.Environment.EnvironmentName
+        };
+    });
 
-    Uri keyVaultEndpoint = new Uri(uriString);
-    builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new VisualStudioCredential());
-}
+    if (isDevelopmentEnv)
+    {
+        logConfig.WriteTo.Console();
+    }
+});
 
-IConfiguration config = builder.Configuration;
+var services = builder.Services;
 
 string serviceName = "Kvitta";
 
@@ -38,19 +46,6 @@ ResourceBuilder resourceBuilder = ResourceBuilder.CreateDefault().AddService(ser
     ["app"] = builder.Environment.ApplicationName
 });
 
-builder.Logging.AddOpenTelemetry(options =>
-{
-    options.SetResourceBuilder(resourceBuilder);
-
-    if (isDevelopmentEnv)
-    {
-        options.AddConsoleExporter();
-    }
-
-    options.AddOtlpExporter();
-});
-
-string? otlpEndpoint = config.GetValue<string?>("OtlpEndpoint");
 builder.Services.AddOpenTelemetry().WithMetrics(metrics =>
 {
     metrics.SetResourceBuilder(resourceBuilder)
@@ -58,7 +53,7 @@ builder.Services.AddOpenTelemetry().WithMetrics(metrics =>
     .AddAspNetCoreInstrumentation()
     .AddRuntimeInstrumentation()
     .AddProcessInstrumentation();
-    
+
     bool enableConsoleMetrics = config.GetValue<bool>("EnableConsoleMetrics");
     if (isDevelopmentEnv && enableConsoleMetrics)
     {
@@ -67,7 +62,6 @@ builder.Services.AddOpenTelemetry().WithMetrics(metrics =>
 
     metrics.AddOtlpExporter();
 });
-
 
 services.AddCors();
 
@@ -82,15 +76,11 @@ services.AddSwaggerGen(c =>
 
 services.AddControllers();
 
-string aspnetcoreEnvironment =
-    Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-    throw new Exception("No ASPNETCORE_ENVIRONMENT env variable set");
-
 string? connectionString;
 
 if (isDevelopmentEnv)
 {
-    connectionString = Environment.GetEnvironmentVariable("KvittaDbConnection") ??
+    connectionString = config.GetValue<string>("KvittaDbConnection") ??
                        throw new ApplicationException("No database connection set!");
 
     ;
@@ -119,36 +109,25 @@ else
 
 var app = builder.Build();
 
-app.UseHttpLogging();
-
-app.UseExceptionHandler();
-
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (isDevelopmentEnv)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    app.UseHttpsRedirection();
-}
+
+app.UseSerilogRequestLogging();
+
+app.UseHttpsRedirection();
+
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/hello", string (ILogger<Program> logger) =>
-{
-    return "Hello NEW World!";
-});
+app.MapGet("/hello", string (ILogger<Program> logger) => "Hello NEW World!");
 
-app.MapGet("/logtest", void (ILogger<Program> logger) =>
+app.MapGet("/logtest", void (ILogger logger) =>
 {
-    logger.LogInformation("Log Test");
-});
-
-app.MapGet("/exception", void () =>
-{
-    throw new Exception("Testing Exceptions");
+    logger.Warning("Log Test");
 });
 
 app.MapValuablesEndpoints();

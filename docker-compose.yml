@@ -1,26 +1,38 @@
-﻿services:
-  #  api:
-  #    image: kvitta
-  #    ports:
-  #      - "8080:8080"
-  #      - "8081:8081"
-  #    restart: on-failure
-  #    build:
-  #      context: .
-  #      dockerfile: build
-  #    environment:
-  #      - KVITTA_DB_CONNECTION=${KVITTA_DB_CONNECTION}
-  #      - ASPNETCORE_ENVIRONMENT=Development
-  #    env_file:
-  #      - .env
-  #    volumes:
-  #      - type: volume
-  #        source: kvitta-logs
-  #        target: /var/logs
+﻿networks:
+  kvitta:
+
+volumes:
+  kvitta_db:
+
+services:
+
+  api:
+    image: kvitta-app
+    container_name: kvitta-api
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: build
+    env_file:
+      - .env
+    environment:
+      - KvittaDbConnection=Host=kvitta-db;Port=5432;Database=${POSTGRES_DATABASE};Username=postgres;Password=${POSTGRES_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - kvitta
+    depends_on:
+      db:
+        condition: service_healthy
+
+
   db:
     image: postgres:latest
+    container_name: kvitta-db
     ports:
-      - 5432:5432
+      - "127.0.0.1:5432:5432"
     volumes:
       - kvitta_db:/var/lib/postgresql/data
     env_file:
@@ -30,9 +42,9 @@
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE}
     networks:
-      - kvitta_network
-networks:
-  kvitta_network:
-    driver: bridge
-volumes:
-  kvitta_db:
+      - kvitta
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
