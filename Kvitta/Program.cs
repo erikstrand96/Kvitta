@@ -1,13 +1,10 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Infrastructure.Database.Extensions;
-using Kvitta;
 using Kvitta.Endpoints;
 using Microsoft.OpenApi.Models;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Serilog;
 using ILogger = Serilog.ILogger;
 

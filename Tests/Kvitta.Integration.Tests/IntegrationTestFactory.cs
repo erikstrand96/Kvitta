@@ -18,28 +18,20 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .Build();
 
     /// <summary>
-    /// Configure in-memory representation of the web host used for testing
+    /// Configure in-memory representation of the web host, used for testing
     /// </summary>
     /// <param name="builder"></param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
-        
+
+        string connectionString = _dbContainer.GetConnectionString();
+        Environment.SetEnvironmentVariable("KvittaDbConnection", connectionString);
+
         builder.ConfigureTestServices(services =>
         {
-            var contextType = typeof(DbContextOptions<KvittaDbContext>);
-
-            var context = services.SingleOrDefault(x => x.ServiceType == contextType);
-
-            if (context is not null)
-            {
-                services.Remove(context);
-            }
-    
-            //Replace DbContext with the test container instance
             services.AddDbContext<KvittaDbContext>(options =>
             {
-                string connectionString = _dbContainer.GetConnectionString();
                 options.UseNpgsql(connectionString);
             });
         });
