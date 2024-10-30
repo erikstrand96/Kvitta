@@ -8,6 +8,7 @@ using Testcontainers.PostgreSql;
 
 namespace Kvitta.Integration.Tests;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
@@ -16,13 +17,17 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithPassword("kvitta-pw")
         .Build();
 
+    /// <summary>
+    /// Configure in-memory representation of the web host used for testing
+    /// </summary>
+    /// <param name="builder"></param>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
         
         builder.ConfigureTestServices(services =>
         {
-            Type contextType = typeof(DbContextOptions<KvittaDbContext>);
+            var contextType = typeof(DbContextOptions<KvittaDbContext>);
 
             var context = services.SingleOrDefault(x => x.ServiceType == contextType);
 
@@ -30,7 +35,8 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
             {
                 services.Remove(context);
             }
-
+    
+            //Replace DbContext with the test container instance
             services.AddDbContext<KvittaDbContext>(options =>
             {
                 string connectionString = _dbContainer.GetConnectionString();

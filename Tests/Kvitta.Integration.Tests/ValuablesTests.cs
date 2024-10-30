@@ -32,7 +32,7 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
     }
 
     [Fact]
-    public async void CreateWithWarrantyAdded_ShouldCreateValuableAndWarranty()
+    public async void CreateWithWarranty_ShouldCreateValuableAndWarranty()
     {
         Valuable valuableWithWarranty = new()
         {
