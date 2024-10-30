@@ -15,6 +15,7 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithDatabase("kvitta")
         .WithUsername("kvitta-user")
         .WithPassword("kvitta-pw")
+        .WithPortBinding(53760, 5432)
         .Build();
 
     /// <summary>
@@ -30,11 +31,24 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
 
         builder.ConfigureTestServices(services =>
         {
+            RemoveExistingDbContext(services);
+
             services.AddDbContext<KvittaDbContext>(options =>
             {
                 options.UseNpgsql(connectionString);
             });
         });
+        
+    }
+
+    private static void RemoveExistingDbContext(IServiceCollection services)
+    {
+        Type contextType = typeof(DbContextOptions<KvittaDbContext>);
+        ServiceDescriptor? serviceDescriptor = services.SingleOrDefault(x => x.ServiceType == contextType);
+        if (serviceDescriptor is not null)
+        {
+            services.Remove(serviceDescriptor);
+        }
     }
 
     public Task InitializeAsync()

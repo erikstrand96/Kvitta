@@ -1,10 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using FluentAssertions;
 using Infrastructure.Database.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kvitta.Integration.Tests;
 
@@ -27,6 +24,18 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
         
         //Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        response.Headers.Location.Should().NotBeNull();
+
+        var locationHeader = response.Headers.Location;
+        locationHeader.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task GetAllValuables_ShouldReturnCollectionWithValues()
+    {
+        const string uri = "/valuables";
+
+        var response = await HttpClient.GetFromJsonAsync<List<Valuable>>(uri);
+
+        response!.Count.Should().BeGreaterThan(0);
     }
 }
