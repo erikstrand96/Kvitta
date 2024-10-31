@@ -15,7 +15,6 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithDatabase("kvitta")
         .WithUsername("kvitta-user")
         .WithPassword("kvitta-pw")
-        .WithPortBinding(53760, 5432)
         .Build();
 
     /// <summary>
