@@ -1,5 +1,7 @@
 using Infrastructure.Database.Context;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kvitta.Integration.Tests;
@@ -23,27 +25,24 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestFactory
             _dbContext.Database.Migrate();
         }
 
-        const string query = """
+        var config = factory.Services.GetRequiredService<IConfiguration>();
 
-                             INSERT INTO public."Valuables" ("Id", "Name", "PurchaseDate", "Value", "Description")
-                             VALUES 
-                                 (gen_random_uuid(), 'Gold Ring', '2022-06-15 13:30:00+00', 1500.00, 'A valuable gold ring passed down generations.'),
-                                 (gen_random_uuid(), 'Laptop', '2023-02-10 09:00:00+00', 1200.50, 'Latest model, essential for work and personal use.'),
-                                 (gen_random_uuid(), 'Guitar', '2021-08-05 18:45:00+00', 800.00, 'Electric guitar used for music production.'),
-                                 (gen_random_uuid(), 'Smartphone', '2023-04-20 15:15:00+00', 999.99, 'High-end smartphone with excellent camera features.'),
-                                 (gen_random_uuid(), 'Delete', '2020-12-01 14:00:00+00', 300.00, 'Entity to delete.');
+        string contentRoot = config.GetValue<string>(WebHostDefaults.ContentRootKey)!;
+        DirectoryInfo directoryInfo = new(contentRoot);
+        string parentPath = directoryInfo.Parent!.FullName;
+        string filePath = "Tests/Kvitta.Integration.Tests/testdata/valuables-data.txt";
+        
+        string content = File.ReadAllText(Path.Combine(parentPath, filePath));
 
-                             """;
-         
-        _dbContext.Database.ExecuteSqlRaw(query);
+        _dbContext.Database.ExecuteSqlRaw(content);
 
         _dbContext.SaveChanges();
     }
 
     public void Dispose()
     {
-        _scope?.Dispose();
-        _dbContext?.Dispose();
-        HttpClient?.Dispose();
+        _scope.Dispose();
+        _dbContext.Dispose();
+        HttpClient.Dispose();
     }
 }

@@ -9,7 +9,7 @@ public class Valuable
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public DateTimeOffset PurchaseDate { get; set; }
 
