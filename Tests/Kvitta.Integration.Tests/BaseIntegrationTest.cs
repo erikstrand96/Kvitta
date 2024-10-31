@@ -9,20 +9,20 @@ namespace Kvitta.Integration.Tests;
 public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestFactory>, IDisposable
 {
     private readonly IServiceScope _scope;
-    private readonly KvittaDbContext _dbContext;
+    protected private readonly KvittaDbContext DbContext;
     protected readonly HttpClient HttpClient;
 
     protected BaseIntegrationTest(IntegrationTestFactory factory)
     {
         _scope = factory.Services.CreateScope();
 
-        _dbContext = _scope.ServiceProvider.GetRequiredService<KvittaDbContext>();
+        DbContext = _scope.ServiceProvider.GetRequiredService<KvittaDbContext>();
 
         HttpClient = factory.CreateClient();
 
-        if (_dbContext.Database.GetMigrations().Any())
+        if (DbContext.Database.GetMigrations().Any())
         {
-            _dbContext.Database.Migrate();
+            DbContext.Database.Migrate();
         }
 
         var config = factory.Services.GetRequiredService<IConfiguration>();
@@ -34,15 +34,15 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestFactory
         
         string content = File.ReadAllText(Path.Combine(parentPath, filePath));
 
-        _dbContext.Database.ExecuteSqlRaw(content);
+        DbContext.Database.ExecuteSqlRaw(content);
 
-        _dbContext.SaveChanges();
+        DbContext.SaveChanges();
     }
 
     public void Dispose()
     {
         _scope.Dispose();
-        _dbContext.Dispose();
+        DbContext.Dispose();
         HttpClient.Dispose();
     }
 }
