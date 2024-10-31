@@ -15,7 +15,7 @@ bool isDevelopmentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONME
 
 builder.Logging.ClearProviders();
 
-builder.Host.UseSerilog((context, logConfig) =>
+builder.Host.UseSerilog((_, logConfig) =>
 {
     logConfig.ReadFrom.Configuration(config);
     logConfig.WriteTo.OpenTelemetry(otelConfig =>
@@ -79,8 +79,7 @@ if (isDevelopmentEnv)
 {
     connectionString = config.GetValue<string>("KvittaDbConnection") ??
                        throw new ApplicationException("No database connection set!");
-
-    ;
+    
     services.AddKvittaDbContext(connectionString);
     services.ApplyMigrations();
 }
@@ -120,7 +119,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/hello", string (ILogger<Program> logger) => "Hello NEW World!");
+app.MapGet("/hello", string () => "Hello NEW World!");
 
 app.MapGet("/logtest", void (ILogger logger) =>
 {
@@ -131,4 +130,4 @@ app.MapValuablesEndpoints();
 
 await app.RunAsync();
 
-public partial class Program {}
+public abstract partial class Program {}
