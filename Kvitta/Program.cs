@@ -75,33 +75,39 @@ services.AddControllers();
 
 string? connectionString;
 
-if (isDevelopmentEnv)
-{
-    connectionString = config.GetValue<string>("KvittaDbConnection") ??
-                       throw new ApplicationException("No database connection set!");
+connectionString = config.GetValue<string>("KvittaDbConnection") ??
+                   throw new ApplicationException("No database connection set!");
     
-    services.AddKvittaDbContext(connectionString);
-    services.ApplyMigrations();
-}
-else
-{
-    SecretClientOptions secretClientOptions = new()
-    {
-        Retry =
-        {
-            Delay = TimeSpan.FromSeconds(2),
-            MaxRetries = 5,
-        }
-    };
+services.AddKvittaDbContext(connectionString);
+services.ApplyMigrations();
 
-    var client = new SecretClient(new Uri("https://kvitta-keyvault.vault.azure.net/"), new DefaultAzureCredential(),
-        secretClientOptions);
-
-    KeyVaultSecret keyVaultSecret = client.GetSecret("KvittaDbConnection");
-    connectionString = keyVaultSecret.Value ?? throw new ApplicationException("No database connection set!");
-
-    services.AddKvittaDbContext(connectionString);
-}
+// if (isDevelopmentEnv)
+// {
+//     connectionString = config.GetValue<string>("KvittaDbConnection") ??
+//                        throw new ApplicationException("No database connection set!");
+//     
+//     services.AddKvittaDbContext(connectionString);
+//     services.ApplyMigrations();
+// }
+// else
+// {
+//     SecretClientOptions secretClientOptions = new()
+//     {
+//         Retry =
+//         {
+//             Delay = TimeSpan.FromSeconds(2),
+//             MaxRetries = 5,
+//         }
+//     };
+//
+//     var client = new SecretClient(new Uri("https://kvitta-keyvault.vault.azure.net/"), new DefaultAzureCredential(),
+//         secretClientOptions);
+//
+//     KeyVaultSecret keyVaultSecret = client.GetSecret("KvittaDbConnection");
+//     connectionString = keyVaultSecret.Value ?? throw new ApplicationException("No database connection set!");
+//
+//     services.AddKvittaDbContext(connectionString);
+// }
 
 var app = builder.Build();
 
