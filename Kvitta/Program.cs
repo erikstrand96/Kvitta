@@ -1,5 +1,3 @@
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Infrastructure.Database.Extensions;
 using Kvitta.Endpoints;
 using Microsoft.OpenApi.Models;
@@ -15,6 +13,8 @@ bool isDevelopmentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONME
 
 builder.Logging.ClearProviders();
 
+string serviceName = builder.Environment.ApplicationName;
+    
 builder.Host.UseSerilog((_, logConfig) =>
 {
     logConfig.ReadFrom.Configuration(config);
@@ -35,23 +35,22 @@ builder.Host.UseSerilog((_, logConfig) =>
 
 var services = builder.Services;
 
-string serviceName = "Kvitta";
-
-ResourceBuilder resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName).AddAttributes(new Dictionary<string, object>
-{
-    ["environment.name"] = builder.Environment.EnvironmentName,
-    ["app"] = builder.Environment.ApplicationName
-});
+ResourceBuilder resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName).AddAttributes(
+    new Dictionary<string, object>
+    {
+        ["environment.name"] = builder.Environment.EnvironmentName
+    });
 
 builder.Services.AddOpenTelemetry().WithMetrics(metrics =>
 {
     metrics.SetResourceBuilder(resourceBuilder)
-    .AddHttpClientInstrumentation()
-    .AddAspNetCoreInstrumentation()
-    .AddRuntimeInstrumentation()
-    .AddProcessInstrumentation();
+        .AddHttpClientInstrumentation()
+        .AddAspNetCoreInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddProcessInstrumentation();
 
     bool enableConsoleMetrics = config.GetValue<bool>("EnableConsoleMetrics");
+
     if (isDevelopmentEnv && enableConsoleMetrics)
     {
         metrics.AddConsoleExporter();
@@ -71,43 +70,15 @@ services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
-services.AddControllers();
+string connectionString = config.GetValue<string>("KvittaDbConnection") ??
+                          throw new ApplicationException("No database connection set!");
 
-string? connectionString;
-
-connectionString = config.GetValue<string>("KvittaDbConnection") ??
-                   throw new ApplicationException("No database connection set!");
-    
 services.AddKvittaDbContext(connectionString);
-services.ApplyMigrations();
 
-// if (isDevelopmentEnv)
-// {
-//     connectionString = config.GetValue<string>("KvittaDbConnection") ??
-//                        throw new ApplicationException("No database connection set!");
-//     
-//     services.AddKvittaDbContext(connectionString);
-//     services.ApplyMigrations();
-// }
-// else
-// {
-//     SecretClientOptions secretClientOptions = new()
-//     {
-//         Retry =
-//         {
-//             Delay = TimeSpan.FromSeconds(2),
-//             MaxRetries = 5,
-//         }
-//     };
-//
-//     var client = new SecretClient(new Uri("https://kvitta-keyvault.vault.azure.net/"), new DefaultAzureCredential(),
-//         secretClientOptions);
-//
-//     KeyVaultSecret keyVaultSecret = client.GetSecret("KvittaDbConnection");
-//     connectionString = keyVaultSecret.Value ?? throw new ApplicationException("No database connection set!");
-//
-//     services.AddKvittaDbContext(connectionString);
-// }
+if (isDevelopmentEnv)
+{
+    services.ApplyMigrations();
+}
 
 var app = builder.Build();
 
@@ -122,18 +93,16 @@ app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
-
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.MapGet("/hello", string () => "Hello NEW World!");
 
-app.MapGet("/logtest", void (ILogger logger) =>
-{
-    logger.Warning("Log Test");
-});
+app.MapGet("/logtest", void (ILogger logger) => { logger.Warning("Log Test"); });
 
 app.MapValuablesEndpoints();
 
 await app.RunAsync();
 
-public abstract partial class Program {}
+public abstract partial class Program
+{
+}
