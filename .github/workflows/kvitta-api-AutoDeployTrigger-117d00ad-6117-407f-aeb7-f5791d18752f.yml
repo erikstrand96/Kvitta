@@ -41,7 +41,7 @@ jobs:
           registryPassword: ${{ secrets.KVITTAAPI_REGISTRY_PASSWORD }}
           containerAppName: kvitta-api
           resourceGroup: kvitta
-          imageToBuild: [parameters('registryUrl')]/[parameters('containerAppName')]:${{ github.sha }}
+          imageToBuild: kvitta-api:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
 
