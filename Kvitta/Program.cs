@@ -18,11 +18,6 @@ string serviceName = builder.Environment.ApplicationName;
 builder.Host.UseSerilog((_, logConfig) =>
 {
     logConfig.ReadFrom.Configuration(config);
-
-    if (isDevelopmentEnv)
-    {
-        logConfig.WriteTo.Console();
-    }
     
     logConfig.WriteTo.OpenTelemetry(otelConfig =>
     {
