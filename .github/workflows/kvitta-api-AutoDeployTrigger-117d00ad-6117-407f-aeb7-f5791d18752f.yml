@@ -36,7 +36,7 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}
           _dockerfilePathKey_: _dockerfilePath_
-          registryUrl: 
+          registryUrl:  ${{ secrets.KVITTA_REGISTRY }}
           registryUsername: ${{ secrets.KVITTAAPI_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.KVITTAAPI_REGISTRY_PASSWORD }}
           containerAppName: kvitta-api
