@@ -12,9 +12,9 @@ namespace Kvitta.Integration.Tests;
 public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder()
-        .WithDatabase("kvitta")
-        .WithUsername("kvitta-user")
-        .WithPassword("kvitta-pw")
+        .WithDatabase("test")
+        .WithUsername("test-user")
+        .WithPassword("test-pw")
         .Build();
 
     /// <summary>
