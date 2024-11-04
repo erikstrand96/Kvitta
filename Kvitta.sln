@@ -12,11 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
-		main.tf = main.tf
 		README.md = README.md
-		secret.tfvars = secret.tfvars
 		.github\workflows\CI.yml = .github\workflows\CI.yml
-		.github\workflows\kvitta-api-AutoDeployTrigger-117d00ad-6117-407f-aeb7-f5791d18752f.yml = .github\workflows\kvitta-api-AutoDeployTrigger-117d00ad-6117-407f-aeb7-f5791d18752f.yml
+		.github\workflows\AzureContainerAppDeploy.yml = .github\workflows\AzureContainerAppDeploy.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{C3C96FB4-7AD1-4D92-AE57-BEF5CD9CEE87}"
