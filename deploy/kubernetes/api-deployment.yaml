@@ -21,7 +21,7 @@ spec:
           image: kvitta-app:1.0
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - containerPort: 8999
               protocol: TCP
           env:
             - name: ASPNETCORE_ENVIRONMENT
@@ -29,5 +29,5 @@ spec:
             - name: KvittaDbConnection
               value: Host=db-svc;Port=5432;Database=kvitta;Username=postgres;Password=secret1337
             - name: ASPNETCORE_HTTP_PORTS
-              value: "80"
+              value: "8999"
       restartPolicy: Always
