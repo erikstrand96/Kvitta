@@ -37,7 +37,7 @@ resource "azurerm_resource_group" "resourceGroup" {
 
 resource "azurerm_container_registry" "container-registry" {
   location            = var.location
-  name                = "kvitta-registry"
+  name                = "kvittaregistry"
   resource_group_name = var.resourceGroup
   sku                 = "Basic"
 }
