@@ -29,7 +29,7 @@ services:
 
 
   db:
-    image: postgres:latest
+    image: postgres:16
     container_name: kvitta-db
     ports:
       - "127.0.0.1:54333:5432"

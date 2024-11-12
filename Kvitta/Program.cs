@@ -9,16 +9,20 @@ using ILogger = Serilog.ILogger;
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration config = builder.Configuration;
-bool isDevelopmentEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") is "Development";
+
+string aspnetcoreEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                       throw new ApplicationException("No ASPNETCORE_ENVIRONMENT set!");
+
+bool isDevelopmentEnv = aspnetcoreEnv is "Development";
 
 builder.Logging.ClearProviders();
 
 string serviceName = builder.Environment.ApplicationName;
-    
+
 builder.Host.UseSerilog((_, logConfig) =>
 {
     logConfig.ReadFrom.Configuration(config);
-    
+
     logConfig.WriteTo.OpenTelemetry(otelConfig =>
     {
         otelConfig.ResourceAttributes = new Dictionary<string, object>
@@ -88,6 +92,7 @@ if (isDevelopmentEnv)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.MapGet("/logtest", void (ILogger logger) => { logger.Warning("Log Test"); });
 }
 
 app.UseSerilogRequestLogging();
@@ -96,9 +101,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
-app.MapGet("/hello", string () => "Hello NEW World!");
-
-app.MapGet("/logtest", void (ILogger logger) => { logger.Warning("Log Test"); });
+app.MapGet("/hello", string () => "Hello NEW World!\n");
 
 app.MapValuablesEndpoints();
 
