@@ -1,32 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: kvitta
-  name: kvitta-db
-  labels:
-    app: kvitta-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kvitta-db
-  template:
-    metadata:
-      name: kvitta-db
-      labels:
+    name: db-deploy
+    labels:
         app: kvitta-db
-    spec:
-      containers:
-        - name: kvitta-db
-          image: postgres:latest
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: POSTGRES_PASSWORD
-              value: secret1337
-            - name: POSTGRES_DATABASE
-              value: kvitta
-          ports:
-            - containerPort: 5432
-              protocol: TCP
-      restartPolicy: Always
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: kvitta-db
+    template:
+        metadata:
+            name: kvitta-db
+            labels:
+                app: kvitta-db
+        spec:
+            containers:
+            -   name: kvitta-db
+                image: postgres:latest
+                imagePullPolicy: IfNotPresent
+                ports:
+                -   containerPort: 5432
+                    protocol: TCP
+                env:
+                -   name: POSTGRES_PASSWORD
+                    value: secret1337
+                -   name: POSTGRES_DATABASE
+                    value: kvitta
+            restartPolicy: Always
       

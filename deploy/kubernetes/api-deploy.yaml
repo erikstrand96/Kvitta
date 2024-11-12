@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deploy
+  labels:
+    app: kvitta-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kvitta-api
+  template:
+    metadata:
+      name: kvitta-api
+      labels:
+        app: kvitta-api
+    spec:
+      containers:
+        - name: kvitta-api
+          image: kvitta-app:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8999
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: KvittaDbConnection
+              value: Host=db-svc;Port=5432;Database=kvitta;Username=postgres;Password=secret1337
+            - name: ASPNETCORE_HTTP_PORTS
+              value: "80"
+      restartPolicy: Always
+      

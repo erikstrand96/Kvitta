@@ -4,9 +4,8 @@ kind: Kustomization
 namespace: kvitta
 
 resources:
-  - ingress.yaml
   - namespace.yaml
-  - kvitta-svc.yaml
-  - api-deployment.yaml
-  - db-deploy.yaml
   - db-svc.yaml
+  - db-deploy.yaml
+  - api-svc.yaml
+  - api-deploy.yaml
