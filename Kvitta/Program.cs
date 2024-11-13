@@ -1,5 +1,7 @@
+using HealthChecks.UI.Client;
 using Infrastructure.Database.Extensions;
 using Kvitta.Endpoints;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -85,6 +87,8 @@ if (isDevelopmentEnv)
     services.ApplyMigrations();
 }
 
+services.AddHealthChecks().AddNpgSql(connectionString);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -100,6 +104,11 @@ app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
+app.UseHealthChecks("/_health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 app.MapGet("/hello", string () => "Hello NEW World!\n");
 
