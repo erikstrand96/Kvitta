@@ -111,7 +111,7 @@ app.UseHealthChecks("/_health", new HealthCheckOptions
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
-app.MapGet("/hello", string () => "Hello NEW World!\n");
+app.MapGet("/hello", string () => "Hello World!\n");
 
 app.MapValuablesEndpoints();
 

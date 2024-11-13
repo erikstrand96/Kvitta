@@ -16,7 +16,7 @@ echo
 pwd
 echo
 
-dotnet ef migrations bundle -p ./Infrastructure  --self-contained -r linux-x64 --force
+dotnet ef migrations bundle -p ./Infrastructure  --self-contained -r linux-x64
 
 if [ $? -eq 1 ]; then
     echo
@@ -28,6 +28,7 @@ fi
 
 if [ $? -eq 0 ]; then
     sudo systemctl start kvitta.service
+    rm ./bundle
     else 
       echo
       echo "Failed to start kvitta.service"
