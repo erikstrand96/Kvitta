@@ -87,7 +87,8 @@ if (isDevelopmentEnv)
     services.ApplyMigrations();
 }
 
-services.AddHealthChecks().AddNpgSql(connectionString);
+services.AddHealthChecks()
+    .AddNpgSql(connectionString, name: "Postgres Database");
 
 var app = builder.Build();
 
