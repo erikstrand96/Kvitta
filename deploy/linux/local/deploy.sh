@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#The app runs using a linux system service under /etc/systemd/system/kvitta.service 
+#The app runs using a linux system service called kvitta.service under /etc/systemd/system/ 
 # https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/linux-nginx?view=aspnetcore-8.0&tabs=linux-ubuntu#create-the-service-file
 
 echo "Stopping kvitta service"
