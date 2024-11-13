@@ -13,14 +13,22 @@ echo
 dotnet publish -c Release --property:PublishDir=/home/apps/kvitta/ --os linux
 echo
 
-dotnet ef migrations bundle --self-contained - r linux-x64
+pwd
+echo
 
-if [ $? -eq 0 ]; then
+dotnet ef migrations bundle -p ./Infrastructure  --self-contained -r linux-x64 --force
+
+if [ $? -eq 1 ]; then
     echo
-    sudo systemctl start kvitta.service
-    sudo systemctl status kvitta.service
-else
     echo "EF Core migration failed"
+    exit 1
 fi
 
+./efbundle
 
+if [ $? -eq 0 ]; then
+    sudo systemctl start kvitta.service
+    else 
+      echo
+      echo "Failed to start kvitta.service"
+fi
