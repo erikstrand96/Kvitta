@@ -13,10 +13,12 @@ echo
 dotnet publish -c Release --property:PublishDir=/home/apps/kvitta/ --os linux
 echo
 
-pwd
 echo
 
-dotnet ef migrations bundle -p ./Infrastructure  --self-contained -r linux-x64
+#CURRENT_DIR=$(pwd)
+#echo "Current directory: $CURRENT_DIR"
+dotnet-ef migrations bundle -p ./Infrastructure  --self-contained -r linux-x64
+
 
 if [ $? -eq 1 ]; then
     echo
@@ -28,8 +30,9 @@ fi
 
 if [ $? -eq 0 ]; then
     sudo systemctl start kvitta.service
-    rm ./bundle
     else 
       echo
       echo "Failed to start kvitta.service"
 fi
+
+rm ./efbundle
