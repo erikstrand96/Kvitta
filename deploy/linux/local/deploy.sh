@@ -30,9 +30,9 @@ fi
 
 if [ $? -eq 0 ]; then
     sudo systemctl start kvitta.service
+    rm ./efbundle
     else 
       echo
       echo "Failed to start kvitta.service"
 fi
 
-rm ./efbundle
