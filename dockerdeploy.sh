@@ -11,7 +11,7 @@ echo
 MAX_RETRIES=5  
 DELAY=1   
 
-command="curl  http://localhost:8080/hello"
+command="curl  http://localhost:8338/hello"
 
 for ((i=1; i<=MAX_RETRIES; i++)); do
 
