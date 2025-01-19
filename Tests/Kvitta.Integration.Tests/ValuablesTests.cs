@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
 using Infrastructure.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,10 +23,9 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
         var response = await HttpClient.PostAsJsonAsync("/valuables", valuable);
         
         //Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-
+        Assert.Equivalent(response.StatusCode, HttpStatusCode.Created);
         var locationHeader = response.Headers.Location;
-        locationHeader.Should().NotBeNull();
+        Assert.NotNull(locationHeader);
     }
 
     [Fact]
@@ -37,7 +35,7 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
 
         var response = await HttpClient.GetFromJsonAsync<List<Valuable>>(uri);
 
-        response!.Count.Should().BeGreaterThan(0);
+        Assert.True(response!.Count > 0);
     }
 
     [Fact]
@@ -48,6 +46,6 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
         
         var response = await HttpClient.DeleteAsync(uri);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        Assert.Equivalent(response.StatusCode, HttpStatusCode.OK);
     }
 }
