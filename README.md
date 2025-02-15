@@ -15,4 +15,4 @@ Set the environment variable for the connection string pointing to your developm
 
     Windows: 
     setx  KvittaDbConnection "Host=localhost;Port=port;Database=database;Username=username;Password=password"
-    REMARK: This will persist the variable across terminal sessions, but ony for the current user
+    REMARK: This will persist the variable across terminal sessions, but only for the current user
