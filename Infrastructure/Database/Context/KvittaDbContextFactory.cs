@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace Infrastructure.Database.Context;
 
-// ReSharper disable once UnusedType.Global
 internal class KvittaDbContextFactory : IDesignTimeDbContextFactory<KvittaDbContext>
 {
     public KvittaDbContext CreateDbContext(string[] args)

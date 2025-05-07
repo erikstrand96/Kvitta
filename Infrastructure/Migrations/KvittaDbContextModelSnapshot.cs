@@ -17,7 +17,7 @@ namespace Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -50,7 +50,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("WarrantyId");
 
-                    b.ToTable("Valuables", (string)null);
+                    b.ToTable("Valuables");
                 });
 
             modelBuilder.Entity("Infrastructure.Database.Models.Warranty", b =>
@@ -68,7 +68,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Warranties", (string)null);
+                    b.ToTable("Warranty");
                 });
 
             modelBuilder.Entity("Infrastructure.Database.Models.Valuable", b =>
