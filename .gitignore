@@ -12,6 +12,7 @@
 *.DotSettings.user
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+.env
 
 # Mono auto generated files
 mono_crash.*
@@ -352,3 +353,10 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /efbundle
+.idea/.idea.Kvitta/.idea/.gitignore
+.idea/.idea.Kvitta/.idea/.name
+.idea/.idea.Kvitta/.idea/encodings.xml
+.idea/.idea.Kvitta/.idea/indexLayout.xml
+.idea/.idea.Kvitta/.idea/vcs.xml
+.vscode/launch.json
+.vscode/tasks.json
