@@ -56,7 +56,7 @@ builder.Services.AddOpenTelemetry().WithMetrics(metrics =>
         .AddRuntimeInstrumentation()
         .AddProcessInstrumentation();
 
-    bool enableConsoleMetrics = config.GetValue<bool>("EnableConsoleMetrics");
+    var enableConsoleMetrics = config.GetValue<bool>("EnableConsoleMetrics");
 
     if (isDevelopmentEnv && enableConsoleMetrics)
     {
@@ -97,7 +97,7 @@ if (isDevelopmentEnv)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapGet("/logtest", void (ILogger logger) => { logger.Warning("Log Test"); });
+    app.MapGet("/logtest", void (ILogger logger) => logger.Warning("Log Test"));
 }
 
 app.UseSerilogRequestLogging();
@@ -117,6 +117,4 @@ app.MapValuablesEndpoints();
 
 await app.RunAsync();
 
-public abstract partial class Program
-{
-}
+public abstract partial class Program;
