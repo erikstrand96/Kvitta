@@ -42,7 +42,7 @@ public class ValuablesTests(IntegrationTestFactory testFactory) : BaseIntegratio
     public async Task DeleteValuable_ShouldDeleteEntity()
     {
         var entity = await DbContext.Valuables.FirstAsync(x => x.Name.Equals("DeleteValuable"));
-        string uri = $"/valuables/{entity.Id}";
+        var uri = $"/valuables/{entity.Id}";
         
         var response = await HttpClient.DeleteAsync(uri);
 

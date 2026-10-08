@@ -9,7 +9,7 @@ namespace Kvitta.Integration.Tests;
 public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestFactory>, IDisposable
 {
     private readonly IServiceScope _scope;
-    protected private readonly KvittaDbContext DbContext;
+    private protected readonly KvittaDbContext DbContext;
     protected readonly HttpClient HttpClient;
 
     protected BaseIntegrationTest(IntegrationTestFactory factory)
@@ -27,12 +27,12 @@ public abstract class BaseIntegrationTest : IClassFixture<IntegrationTestFactory
 
         var config = factory.Services.GetRequiredService<IConfiguration>();
 
-        string contentRoot = config.GetValue<string>(WebHostDefaults.ContentRootKey)!;
+        var contentRoot = config.GetValue<string>(WebHostDefaults.ContentRootKey)!;
         DirectoryInfo directoryInfo = new(contentRoot);
-        string parentPath = directoryInfo.Parent!.FullName;
-        string filePath = "Tests/Kvitta.Integration.Tests/testdata/valuables-data.txt";
+        var parentPath = directoryInfo.Parent!.FullName;
+        const string filePath = "Tests/Kvitta.Integration.Tests/testdata/valuables-data.txt";
         
-        string content = File.ReadAllText(Path.Combine(parentPath, filePath));
+        var content = File.ReadAllText(Path.Combine(parentPath, filePath));
 
         DbContext.Database.ExecuteSqlRaw(content);
 

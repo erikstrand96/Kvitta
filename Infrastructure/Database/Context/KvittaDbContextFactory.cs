@@ -9,9 +9,9 @@ internal class KvittaDbContextFactory : IDesignTimeDbContextFactory<KvittaDbCont
     {
         var optionsBuilder = new DbContextOptionsBuilder<KvittaDbContext>();
 
-        string connectionString = Environment.GetEnvironmentVariable("KvittaDbConnection") ??
-                                  throw new InvalidOperationException("KvittaDbConnection is not set.");
-
+        var connectionString = Environment.GetEnvironmentVariable("KvittaDbConnection") ??
+                               throw new InvalidOperationException("KvittaDbConnection is not set.");
+    
         optionsBuilder.UseNpgsql(connectionString);
 
         return new KvittaDbContext(optionsBuilder.Options);

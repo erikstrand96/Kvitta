@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: kvitta-api
-          image: kvitta-app:1.0
+          image: erikstrand/kvitta-arm64:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8999

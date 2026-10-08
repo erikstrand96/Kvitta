@@ -6,11 +6,11 @@ namespace Kvitta.Endpoints;
 
 public static class ValuablesEndpoints
 {
-    public static IEndpointRouteBuilder MapValuablesEndpoints(this IEndpointRouteBuilder routeBuilder)
+    public static void MapValuablesEndpoints(this IEndpointRouteBuilder routeBuilder)
     {
         routeBuilder.MapGet("/valuables", async (KvittaDbContext context) =>
         {
-           List<Valuable> valuables = await context.Valuables.ToListAsync();
+           var valuables = await context.Valuables.ToListAsync();
 
            return Results.Ok(valuables);
         });
@@ -25,19 +25,15 @@ public static class ValuablesEndpoints
 
         routeBuilder.MapGet("/valuables/{id}", async (Guid id, KvittaDbContext dbContext) =>
         {
-            Valuable? valuable = await dbContext.Valuables.FirstOrDefaultAsync(x => x.Id == id);
+            var valuable = await dbContext.Valuables.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (valuable is null)
-            {
-                return Results.NotFound();
-            }
+            return valuable is null ? Results.NotFound() : Results.Ok(valuable);
 
-            return Results.Ok(valuable);
         });
 
         routeBuilder.MapDelete("/valuables/{id}", async (KvittaDbContext context, Guid id) =>
         {
-            Valuable? valuable = await context.Valuables.FindAsync(id);
+            var valuable = await context.Valuables.FindAsync(id);
 
             if (valuable is null)
             {
@@ -50,6 +46,5 @@ public static class ValuablesEndpoints
             return Results.Ok();
         });
 
-        return routeBuilder;
     }
 }

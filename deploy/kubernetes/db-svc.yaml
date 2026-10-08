@@ -4,7 +4,7 @@ metadata:
     name: db-svc
 spec:
     selector:
-        app: db-svc
+        app: kvitta-db
     ports:
     -   protocol: TCP
         port: 5432

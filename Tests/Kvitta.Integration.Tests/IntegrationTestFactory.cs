@@ -25,7 +25,7 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
 
-        string connectionString = _dbContainer.GetConnectionString();
+        var connectionString = _dbContainer.GetConnectionString();
         Environment.SetEnvironmentVariable("KvittaDbConnection", connectionString);
 
         builder.ConfigureTestServices(services =>
@@ -42,8 +42,8 @@ public class IntegrationTestFactory : WebApplicationFactory<Program>, IAsyncLife
 
     private static void RemoveExistingDbContext(IServiceCollection services)
     {
-        Type contextType = typeof(DbContextOptions<KvittaDbContext>);
-        ServiceDescriptor? serviceDescriptor = services.SingleOrDefault(x => x.ServiceType == contextType);
+        var contextType = typeof(DbContextOptions<KvittaDbContext>);
+        var serviceDescriptor = services.SingleOrDefault(x => x.ServiceType == contextType);
         if (serviceDescriptor is not null)
         {
             services.Remove(serviceDescriptor);

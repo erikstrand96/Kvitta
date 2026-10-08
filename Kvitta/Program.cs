@@ -12,14 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration config = builder.Configuration;
 
-string aspnetcoreEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                       throw new ApplicationException("No ASPNETCORE_ENVIRONMENT set!");
+var aspnetcoreEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                    throw new ApplicationException("No ASPNETCORE_ENVIRONMENT set!");
 
-bool isDevelopmentEnv = aspnetcoreEnv is "Development";
+var isDevelopmentEnv = aspnetcoreEnv is "Development";
 
 builder.Logging.ClearProviders();
 
-string serviceName = builder.Environment.ApplicationName;
+var serviceName = builder.Environment.ApplicationName;
 
 builder.Host.UseSerilog((_, logConfig) =>
 {
@@ -42,7 +42,7 @@ builder.Host.UseSerilog((_, logConfig) =>
 
 var services = builder.Services;
 
-ResourceBuilder resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName).AddAttributes(
+var resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName).AddAttributes(
     new Dictionary<string, object>
     {
         ["environment.name"] = builder.Environment.EnvironmentName
@@ -77,8 +77,8 @@ services.AddSwaggerGen(c =>
     c.EnableAnnotations();
 });
 
-string connectionString = config.GetValue<string>("KvittaDbConnection") ??
-                          throw new ApplicationException("No database connection set!");
+var connectionString = config.GetValue<string>("KvittaDbConnection") ??
+                       throw new ApplicationException("No database connection set!");
 
 services.AddKvittaDbContext(connectionString);
 

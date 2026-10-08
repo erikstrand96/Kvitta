@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Infrastructure.Database.Models;
+﻿using Infrastructure.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Context;
