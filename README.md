@@ -1,5 +1,7 @@
 [![CI](https://github.com/erikstrand96/Kvitta/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/erikstrand96/Kvitta/actions/workflows/CI.yml)&nbsp;
 
+> **Note:** This project is intended solely for learning and development purposes and is not production-ready.
+
 **Tech Stack**</br>
 .NET 8 </br>
 PostgreSQL
