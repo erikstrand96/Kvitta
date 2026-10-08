@@ -5,6 +5,8 @@ namespace: kvitta
 
 resources:
   - namespace.yaml
+  - secret.yaml
+  - db-pvc.yaml
   - db-svc.yaml
   - db-deploy.yaml
   - api-svc.yaml
